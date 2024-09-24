@@ -326,11 +326,6 @@ re_requirement = re.compile(r"\s*([-_a-zA-Z0-9]+)\s*(?:==\s*([-+_.a-zA-Z0-9]+))?
 
 
 def requirements_met(requirements_file):
-    """
-    Does a simple parse of a requirements.txt file to determine if all rerqirements in it
-    are already installed. Returns True if so, False if not installed or parsing fails.
-    """
-
     import importlib.metadata
     import packaging.version
 
@@ -351,11 +346,22 @@ def requirements_met(requirements_file):
 
             try:
                 version_installed = importlib.metadata.version(package)
-            except Exception:
+            except importlib.metadata.PackageNotFoundError:
+                print(f"Package {package} is not installed.")
                 return False
+            except Exception as e:
+                print(f"Error checking {package}: {e}")
+                return False
+
+            # Handle case when version_installed is None
+            if version_installed is None:
+                print(f"Package {package} is missing or not installed.")
+                return False
+
             print(f"Package: {package}")
             print(f"Version required: {version_required}")
             print(f"Version installed: {version_installed}")
+
             if packaging.version.parse(version_required) != packaging.version.parse(version_installed):
                 return False
 
