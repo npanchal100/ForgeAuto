@@ -353,7 +353,9 @@ def requirements_met(requirements_file):
                 version_installed = importlib.metadata.version(package)
             except Exception:
                 return False
-
+            print(f"Package: {package}")
+            print(f"Version required: {version_required}")
+            print(f"Version installed: {version_installed}")
             if packaging.version.parse(version_required) != packaging.version.parse(version_installed):
                 return False
 
